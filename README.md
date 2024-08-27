@@ -1,58 +1,101 @@
-# phlex-sinatra
+# roda-phlex
 
-[Phlex](https://github.com/phlex-ruby/phlex) already works with Sinatra (and everything else) but its normal usage leaves you without access to Sinatra's standard helper methods. This integration lets you use the `url()` helper method from within a Phlex view (along with the rest of the helper methods available in a Sinatra action).
+A [Roda](https://github.com/jeremyevans/roda) plugin that adds some convenience rendering [Phlex](https://github.com/phlex-ruby/phlex) views.  
+Especially accessing application methods from the view.
 
 ## Installation
 
-Add phlex-sinatra to your application's Gemfile and run `bundle install`.
+Install the gem and add to the application's Gemfile by executing:
 
-```ruby
-gem 'phlex-sinatra'
+```bash
+bundle add roda-phlex
 ```
+
+If bundler is not being used to manage dependencies, install the gem by executing:
+
+```bash
+gem install roda-phlex
+```
+
+## Configuration
+
+`plugin :phlex` takes the following options:
+
+- `:layout` (`Phlex::SGML`): Specifies the layout class to be used for rendering
+  views. This class should be a Phlex layout class that defines how the
+  views are structured and rendered.
+- `:layout_opts` (`Object`): Options that are passed to the layout
+  class when it is instantiated. These options can be used to customize
+  the behavior of the layout. Usually, this is a `Hash`.
+- `:layout_handler` (`#call`): A custom handler for creating layout
+  instances. This proc receives three arguments: the layout class, the
+  layout options, and the object to be rendered. By default, it uses the
+  `layout.new(obj, **layout_opts)`, which instantiates the layout class with the
+  provided view object and options as keyword arguments.
+- `:delegate`: Define if or which methods should be delegated to the Roda app:
+  - `true` (default): Create a single `app` method that delegates to the Roda app.
+  - `false`: Do not create any delegate methods.
+  - `:all`: Delegate all methods the Roda app responds to, to it. Be careful with this option.
+            It can lead to unexpected behavior if the Roda app has methods that conflict with Phlex methods.
+  - `Symbol`, `String`, `Array`: Delegate only the specified methods to the Roda app.
 
 ## Usage
 
-To enable the integration use the `phlex` method in your Sinatra action and pass an _instance_ of the Phlex view (instead of using `.call` to get its output):
+Add the plugin to the Roda application:
 
 ```ruby
-get '/foo' do
-  phlex MyView.new
-end
+plugin :phlex
 ```
 
-You can now use Sinatra's `url()` helper method directly and its other methods (`params`, `request`, etc) via the `helpers` proxy:
+Use the `phlex` method in the view to render a Phlex view:
 
 ```ruby
-class MyView < Phlex::HTML
-  def template
-    h1 { 'Phlex / Sinatra integration' }
-    p {
-      a(href: url('/foo', false)) { 'link to foo' }
-    }
-    pre { helpers.params.inspect }
+route do |r|
+  r.root do
+    phlex MyView.new
   end
 end
 ```
 
-You can also pass an alternative content type – which defaults to `:html` (or `:svg` for a `Phlex::SVG` instance):
+You can use all application methods in the view:
 
 ```ruby
-get '/foo' do
-  phlex MyView.new, content_type: :xml
+plugin :sinatra_helpers
+plugin :phlex, delegate: [:url]
+
+class MyView < Phlex::View
+  def view_template
+    h1 { 'Phlex / Roda request params integration' }
+    p {
+      a(href: url("/path", true)) { "link" }
+    }
+    pre { app.request.params.inspect }
+  end
+end
+```
+
+You can also pass an alternative content type (automatically sets `image/svg+xml` for a `Phlex::SVG` instance):
+
+```ruby
+route do |r|
+  r.get '/foo' do
+    phlex MyView.new, content_type: "application/xml"
+  end
 end
 ```
 
 ## Streaming
 
-Streaming a Phlex view can be enabled by passing `stream: true` which will cause Phlex to automatically write to the response after the closing `</head>` and buffer the remaining content:
+Streaming a Phlex view can be enabled by passing `stream: true` which will cause Phlex to automatically write to the response after the closing `</head>` and buffer the remaining content.  
+The Roda `:stream` plugin must be enabled for this to work.
 
 ```ruby
+plugin :streaming
+
 get '/foo' do
   phlex MyView.new, stream: true
 end
 ```
-
-Even with no further intervention this small change means that the browser will receive the complete `<head>` as quickly as possible and can start fetching and processing its external resources while waiting for the rest of the page to download.
 
 You can also manually flush the contents of the buffer at any point using Phlex's `#flush` method:
 
@@ -91,25 +134,29 @@ class MyView < Phlex::HTML
 end
 ```
 
-## Why do I need Sinatra's `url()` helper?
+## Reconfiguring in a route
 
-It might not seem obvious at first why you'd use `url()` at all given that you mostly just pass the string you want to output and then probably `false` so the scheme/host isn't included.
+```ruby
+# Define a default layout and layout options for the whole application
+plugin :phlex, layout: MyLayout, layout_opts: { title: +"My App" }
+route do |r|
+  r.on "posts" do
+    # redefine the layout and layout options for this route tree
+    phlex_layout MyPostLayout
+    phlex_layout_opts[:title] << " - Posts"
 
-There are a couple of reasons:
-
-1. **Linking to a full URL**
-
-   Sometimes you need to link to a page on the site using its full URL – for instance within a feed or for an `og:image` social media preview image link.
-
-2. **Awareness that the app is being served from a subdirectory**
-
-   This isn't something you encounter very often in a standard Sinatra app but you hit it quite quickly if you're using [Parklife](https://github.com/benpickles/parklife) to generate a static build hosted on GitHub Pages – which is exactly what prompted me to write this integration.
-
-   In this case by using the `url()` helper you won’t have to change anything when switching between serving the app from `/` in development and hosting it at `/my-repository/` in production – internal links to other pages/stylesheets/etc will always be correct regardless.
+    r.get 'new' do
+      # Redefine the layout and layout options for this route
+      phlex_layout_opts[:title] = "Create new post"
+      phlex MyView.new
+    end
+  end
+end
+```
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at <https://github.com/benpickles/phlex-sinatra>. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/benpickles/phlex-sinatra/blob/main/CODE_OF_CONDUCT.md).
+Bug reports and pull requests are welcome on GitHub at <https://github.com/fnordfish/roda-phlex>. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/fnordfish/roda-phlex/blob/main/CODE_OF_CONDUCT.md).
 
 ## License
 
@@ -117,4 +164,8 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the phlex-sinatra project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/benpickles/phlex-sinatra/blob/main/CODE_OF_CONDUCT.md).
+Everyone interacting in the Roda::Phlex project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/fnordfish/roda-phlex/blob/main/CODE_OF_CONDUCT.md).
+
+## Acknowledgements
+
+This gem is based on [phlex-sinatra](https://github.com/benpickles/phlex-sinatra), and extended by the layout handling features in [RomanTurner's gist](https://gist.github.com/RomanTurner/0ce0b8792e4149d152d2af2224cb6407)

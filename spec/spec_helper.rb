@@ -1,13 +1,22 @@
 # frozen_string_literal: true
 
-require 'capybara/rspec'
-require 'phlex-sinatra'
-require 'rack/test'
-require 'sinatra/base'
+require "phlex"
+require "roda/phlex"
+require "roda"
+
+require "capybara/rspec"
+require "rack/test"
+
+require_relative "support/test_app_helper"
+require_relative "support/capybara_helper"
 
 RSpec.configure do |config|
+  config.include Rack::Test::Methods
+  config.include TestAppHelper
+  config.include CapybaraHelper, type: :feature
+
   # Enable flags like --only-failures and --next-failure
-  config.example_status_persistence_file_path = 'spec/examples.txt'
+  config.example_status_persistence_file_path = ".rspec_status"
 
   # Disable RSpec exposing methods globally on `Module` and `main`
   config.disable_monkey_patching!
@@ -20,7 +29,7 @@ RSpec.configure do |config|
     # Use the documentation formatter for detailed output,
     # unless a formatter has already been configured
     # (e.g. via a command-line flag).
-    config.default_formatter = 'doc'
+    config.default_formatter = "doc"
   end
 
   config.order = :random

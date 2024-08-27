@@ -1,12 +1,5 @@
-## Version 0.3.0 - 2023-12-13
+## [Unreleased]
 
-- Add support for streaming a view. Pass `stream: true` to the `#phlex` helper so Phlex will use Sinatra's streaming capability.
+## [0.1.0] - 2024-08-26
 
-## Version 0.2.0 - 2023-04-24
-
-- Allow passing a `content_type:` kwarg to the `#phlex` helper so it behaves like Sinatra's other template helpers (defaults to `:html` – or `:svg` for a `Phlex::SVG` instance).
-- Raise an informative error message if the `#phlex` helper receives something other than a Phlex instance.
-
-## Version 0.1.0 - 2023-04-17
-
-- Initial release
+- Initial release based on <https://github.com/benpickles/phlex-sinatra/commit/2e3c9a612cbf6f4b4bf5db880f164b66f008baf8> and <https://gist.github.com/RomanTurner/0ce0b8792e4149d152d2af2224cb6407>
