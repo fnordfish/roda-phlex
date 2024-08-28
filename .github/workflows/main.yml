@@ -8,14 +8,21 @@ on:
   pull_request:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    name: Ruby ${{ matrix.ruby }}
+  tests:
     strategy:
+      fail-fast: false
       matrix:
+        os: ["ubuntu-latest", "macos-latest"]
         ruby:
-          - '3.3.4'
+          - '3.3'
+          - '3.2'
+          - '3.1'
+          - '3.0'
+          - '2.7'
+          - "head"
 
+    runs-on: ${{ matrix.os }}
+    name: Ruby ${{ matrix.ruby }}
     steps:
     - uses: actions/checkout@v4
     - name: Set up Ruby
@@ -23,5 +30,18 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true
-    - name: Run the default task
-      run: bundle exec rake
+    - name: RSpec tests
+      run: bundle exec rspec
+
+  lint:
+    runs-on: ubuntu-latest
+    name: Standard Ruby Lint
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.3'
+        bundler-cache: true
+    - name: Standard
+      run: bundle exec standardrb
