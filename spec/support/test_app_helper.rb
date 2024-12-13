@@ -84,8 +84,14 @@ module TestAppHelper
             phlex FooView.new
           end
 
-          r.on "route_override" do
-            opts[:phlex][:layout] = HomepageLayout
+          r.get "phlex_layout_override" do
+            phlex_layout AlternativeLayout
+            phlex_layout_opts title: "phlex_layout_override"
+            phlex FooView.new("content")
+          end
+
+          r.on "merge_opts_route_override" do
+            opts[:phlex][:layout] = AlternativeLayout
             opts[:phlex][:layout_opts] = {title: "route-title"}
 
             r.get do

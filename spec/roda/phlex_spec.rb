@@ -166,21 +166,28 @@ RSpec.describe "Roda::RodaPlugins::Phlex" do
 
         expect(last_response.body).to eq("<p>foo</p>")
       end
+
+      it "phlex_layout sets layout class" do
+        get "/layout/phlex_layout_override"
+        expect(last_response.body).to eq <<~HTML.chomp
+          <html><head><title>phlex_layout_override</title></head><body><main>AlternativeLayout Start<p>content</p>AlternativeLayout End</main></body></html>
+        HTML
+      end
     end
 
     describe "configures in the route" do
       it "renders the layout using route default options" do
-        get "/layout/route_override"
+        get "/layout/merge_opts_route_override"
 
         expect(last_response.body).to include("<title>route-title</title>")
       end
 
       it "overwrites route default options" do
-        get "/layout/route_override", {title: "custom-title"}
+        get "/layout/merge_opts_route_override", {title: "custom-title"}
         expect(last_response.body).to include("<title>custom-title</title>")
 
         # resets to the route default options
-        get "/layout/route_override"
+        get "/layout/merge_opts_route_override"
         expect(last_response.body).to include("<title>route-title</title>")
       end
     end

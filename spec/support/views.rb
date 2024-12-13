@@ -79,6 +79,24 @@ class HomepageLayout < Phlex::HTML
   end
 end
 
+class AlternativeLayout < HomepageLayout
+  def view_template
+    html do
+      head do
+        title { @title }
+      end
+
+      body {
+        main {
+          plain "AlternativeLayout Start"
+          render @component
+          plain "AlternativeLayout End"
+        }
+      }
+    end
+  end
+end
+
 module ExplicitLayout
   class Layout < Phlex::HTML
     def view_template(&block)

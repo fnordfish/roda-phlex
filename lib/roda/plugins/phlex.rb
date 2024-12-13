@@ -93,8 +93,8 @@ class Roda
 
       module InstanceMethods
         # Retrieves or sets the layout.
-        # @param layout [Phlex::SGML, Undefined, nil] The layout to be set.
-        # @return [Phlex::SGML, nil] The current layout or nil if not set.
+        # @param layout [Class, Undefined, nil] The layout (a +Phlex::SGML+ class) to be set.
+        # @return [Class, nil] The current layout (a +Phlex::SGML+ class) or nil if not set.
         def phlex_layout(layout = Undefined)
           case layout
           when Undefined
@@ -102,10 +102,12 @@ class Roda
           when nil
             opts[:phlex].delete(:layout)
             opts[:phlex].delete(:layout_opts)
-          when ::Phlex::SGML
-            opts[:phlex][:layout] = layout
           else
-            raise TypeError.new(layout)
+            if layout <= ::Phlex::SGML
+              opts[:phlex][:layout] = layout
+            else
+              raise TypeError.new(layout)
+            end
           end
         end
 
