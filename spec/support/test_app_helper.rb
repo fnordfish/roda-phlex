@@ -79,8 +79,13 @@ module TestAppHelper
             end
           end
 
-          r.get "none" do
+          r.get "nil" do
             phlex_layout nil
+            phlex FooView.new
+          end
+
+          r.get "false" do
+            phlex_layout false
             phlex FooView.new
           end
 

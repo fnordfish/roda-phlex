@@ -161,8 +161,14 @@ RSpec.describe "Roda::RodaPlugins::Phlex" do
         HTML
       end
 
-      it "resets the layout" do
-        get "/layout/none"
+      it "resets the layout using 'plex_layout nil'" do
+        get "/layout/nil"
+
+        expect(last_response.body).to eq("<p>foo</p>")
+      end
+
+      it "resets the layout using 'plex_layout false'" do
+        get "/layout/false"
 
         expect(last_response.body).to eq("<p>foo</p>")
       end
