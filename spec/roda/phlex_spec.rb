@@ -208,8 +208,16 @@ RSpec.describe "Roda::RodaPlugins::Phlex" do
       HTML
     end
 
-    it "resets the layout handler to the default" do
-      get "/layout_handler/reset_to_default"
+    it "resets the layout handler to the default using `nil`" do
+      get "/layout_handler/reset_via_nil"
+
+      expect(last_response.body).to eq <<~HTML.chomp
+        <html><head><title>default-title</title></head><body><main>AlternativeLayout Start<p>foo</p>AlternativeLayout End</main></body></html>
+      HTML
+    end
+
+    it "resets the layout handler to the default using `:default`" do
+      get "/layout_handler/reset_via_nil"
 
       expect(last_response.body).to eq <<~HTML.chomp
         <html><head><title>default-title</title></head><body><main>AlternativeLayout Start<p>foo</p>AlternativeLayout End</main></body></html>

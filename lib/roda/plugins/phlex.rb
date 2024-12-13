@@ -138,15 +138,15 @@ class Roda
 
         # Retrieves or sets the layout handler.
         # When no argument is provided, it returns the current layout handler.
-        # Use +nil+ to reset the layout handler to the {DEFAULT_LAYOUT_HANDLER}.
+        # Use +nil+ or +:default: to reset the layout handler to the {DEFAULT_LAYOUT_HANDLER}.
         #
-        # @param handler [#call, nil] The layout handler to be set.
+        # @param handler [#call, nil, :default] The layout handler to be set.
         # @return [#call] The current layout handler.
         def phlex_layout_handler(handler = Undefined)
           case handler
           when Undefined
             opts.dig(:phlex, :layout_handler)
-          when nil
+          when nil, :default
             opts[:phlex][:layout_handler] = DEFAULT_LAYOUT_HANDLER
           else
             opts[:phlex][:layout_handler] = handler

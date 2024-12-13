@@ -118,8 +118,13 @@ module TestAppHelper
             phlex FooView.new
           end
 
-          r.get "reset_to_default" do
+          r.get "reset_via_nil" do
             phlex_layout_handler nil
+            phlex FooView.new
+          end
+
+          r.get "reset_via_default" do
+            phlex_layout_handler :default
             phlex FooView.new
           end
         end
