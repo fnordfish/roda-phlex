@@ -104,7 +104,6 @@ class Roda
             opts.dig(:phlex, :layout)
           when nil, false
             opts[:phlex].delete(:layout)
-            opts[:phlex].delete(:layout_opts)
           else
             if layout <= ::Phlex::SGML
               opts[:phlex][:layout] = layout
