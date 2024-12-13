@@ -6,7 +6,7 @@ module CapybaraHelper
       Capybara.current_session.server.host,
       Capybara.current_session.server.port
     ) { |http|
-      http.set_debug_output $stderr
+      http.set_debug_output $stderr unless http.started?
       http.get(path)
     }
   end
