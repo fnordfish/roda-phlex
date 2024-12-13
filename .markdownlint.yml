@@ -1,0 +1,10 @@
+MD004: # Unordered list style
+  style: sublist
+MD007: # Unordered list indentation
+  indent: 4 # For Yard
+MD013: # Line length
+  line_length: 120
+  code_blocks: false
+  tables: false
+MD024: # Multiple headers with the same content
+  siblings_only: true

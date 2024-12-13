@@ -1,6 +1,7 @@
 # roda-phlex
 
-A [Roda](https://github.com/jeremyevans/roda) plugin that adds some convenience rendering [Phlex](https://github.com/phlex-ruby/phlex) views.  
+A [Roda](https://github.com/jeremyevans/roda) plugin that adds some convenience rendering
+[Phlex](https://github.com/phlex-ruby/phlex) views.  
 Especially accessing application methods from the view.
 
 * API documentation is available at [https://www.rubydoc.info/gems/roda-phlex](https://www.rubydoc.info/gems/roda-phlex/Roda/RodaPlugins/Phlex/InstanceMethods)
@@ -23,23 +24,23 @@ gem install roda-phlex
 
 `plugin :phlex` takes the following options:
 
-- `:layout` (`Phlex::SGML`): Specifies the layout class to be used for rendering
+* `:layout` (`Phlex::SGML`): Specifies the layout class to be used for rendering
   views. This class should be a Phlex layout class that defines how the
   views are structured and rendered.
-- `:layout_opts` (`Object`): Options that are passed to the layout
+* `:layout_opts` (`Object`): Options that are passed to the layout
   class when it is instantiated. These options can be used to customize
   the behavior of the layout. Usually, this is a `Hash`.
-- `:layout_handler` (`#call`): A custom handler for creating layout
+* `:layout_handler` (`#call`): A custom handler for creating layout
   instances. This proc receives three arguments: the layout class, the
-  layout options, and the object to be rendered. By default, it uses the
+  layout options, and the object to be rendered. By default, it runs
   `layout.new(obj, **layout_opts)`, which instantiates the layout class with the
   provided view object and options as keyword arguments.
-- `:delegate`: Define if or which methods should be delegated to the Roda app:
-  - `true` (default): Create a single `app` method that delegates to the Roda app.
-  - `false`: Do not create any delegate methods.
-  - `:all`: Delegate all methods the Roda app responds to, to it. Be careful with this option.
-            It can lead to unexpected behavior if the Roda app has methods that conflict with Phlex methods.
-  - `Symbol`, `String`, `Array`: Delegate only the specified methods to the Roda app.
+* `:delegate`: Define if or which methods should be delegated to the Roda app:
+    + `true` (default): Create a single `app` method that delegates to the Roda app.
+    + `false`: Do not create any delegate methods.
+    + `:all`: Delegate all methods the Roda app responds to, to it. Be careful with this option.
+              It can lead to unexpected behavior if the Roda app has methods that conflict with Phlex methods.
+    + `Symbol`, `String`, `Array<Symbol,String>`: Delegate only the specified methods to the Roda app.
 
 ## Usage
 
@@ -88,7 +89,8 @@ end
 
 ## Streaming
 
-Streaming a Phlex view can be enabled by passing `stream: true` which will cause Phlex to automatically write to the response after the closing `</head>` and buffer the remaining content.  
+Streaming a Phlex view can be enabled by passing `stream: true` which will cause Phlex to automatically write
+to the response after the closing `</head>` and buffer the remaining content.  
 The Roda `:stream` plugin must be enabled for this to work.
 
 ```ruby
@@ -158,7 +160,9 @@ end
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at <https://github.com/fnordfish/roda-phlex>. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/fnordfish/roda-phlex/blob/main/CODE_OF_CONDUCT.md).
+Bug reports and pull requests are welcome on GitHub at <https://github.com/fnordfish/roda-phlex>.
+This project is intended to be a safe, welcoming space for collaboration, and contributors are expected
+to adhere to the [code of conduct](https://github.com/fnordfish/roda-phlex/blob/main/CODE_OF_CONDUCT.md).
 
 ## License
 
@@ -166,8 +170,10 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the Roda::Phlex project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/fnordfish/roda-phlex/blob/main/CODE_OF_CONDUCT.md).
+Everyone interacting in the Roda::Phlex project's codebases, issue trackers, chat rooms and mailing lists is expected
+to follow the [code of conduct](https://github.com/fnordfish/roda-phlex/blob/main/CODE_OF_CONDUCT.md).
 
 ## Acknowledgements
 
-This gem is based on [phlex-sinatra](https://github.com/benpickles/phlex-sinatra), and extended by the layout handling features in [RomanTurner's gist](https://gist.github.com/RomanTurner/0ce0b8792e4149d152d2af2224cb6407)
+This gem is based on [phlex-sinatra](https://github.com/benpickles/phlex-sinatra), and extended by the layout handling
+features in [RomanTurner's gist](https://gist.github.com/RomanTurner/0ce0b8792e4149d152d2af2224cb6407)
