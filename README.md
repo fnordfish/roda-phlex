@@ -3,6 +3,8 @@
 A [Roda](https://github.com/jeremyevans/roda) plugin that adds some convenience rendering [Phlex](https://github.com/phlex-ruby/phlex) views.  
 Especially accessing application methods from the view.
 
+* API documentation is available at [https://www.rubydoc.info/gems/roda-phlex](https://www.rubydoc.info/gems/roda-phlex/Roda/RodaPlugins/Phlex/InstanceMethods)
+
 ## Installation
 
 Install the gem and add to the application's Gemfile by executing:
