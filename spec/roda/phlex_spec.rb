@@ -112,7 +112,7 @@ RSpec.describe "Roda::RodaPlugins::Phlex" do
     it "works" do
       get "/more", {a: 1, b: 2}
 
-      expect(last_response.body).to eq("<pre>{&quot;a&quot;=&gt;&quot;1&quot;, &quot;b&quot;=&gt;&quot;2&quot;}</pre>")
+      expect(last_response.body).to eq("<pre>{&quot;a&quot;:&quot;1&quot;,&quot;b&quot;:&quot;2&quot;}</pre>")
       expect(last_response.media_type).to eq("text/html")
     end
   end

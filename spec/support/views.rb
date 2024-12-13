@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "json"
+
 class FooView < Phlex::HTML
   def initialize(text = "foo")
     @text = text
@@ -22,7 +24,7 @@ end
 
 class MoreDetailsView < Phlex::HTML
   def view_template
-    pre { app.request.params.inspect }
+    pre { JSON.dump(app.request.params) }
   end
 end
 
