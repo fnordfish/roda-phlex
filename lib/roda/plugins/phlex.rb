@@ -18,11 +18,11 @@ class Roda
     #   `DEFAULT_LAYOUT_HANDLER`, which instantiates the layout class with the
     #   provided object and options as keyword arguments.
     # - `:delegate`: Define if or which methods should be delegated to the Roda app:
-    #   - `true` (default): Create a single `app` method that delegates to the Roda app.
-    #   - `false`: Do not create any delegate methods.
-    #   - `:all`: Delegate all methods the Roda app responds to, to it. Be careful with this option.
-    #             It can lead to unexpected behavior if the Roda app has methods that conflict with Phlex methods.
-    #   - `Symbol`, `String`, `Array`: Delegate only the specified methods to the Roda app.
+    #     + `true` (default): Create a single `app` method that delegates to the Roda app.
+    #     + `false`: Do not create any delegate methods.
+    #     + `:all`: Delegate all methods the Roda app responds to, to it. Be careful with this option.
+    #               It can lead to unexpected behavior if the Roda app has methods that conflict with Phlex methods.
+    #     + `Symbol`, `String`, `Array<Symbol,String>`: Delegate only the named methods to the Roda app.
     module Phlex
       Undefined = Object.new
       private_constant :Undefined
@@ -44,6 +44,11 @@ class Roda
 
       # The default layout handler for creating layout instances.
       # Expects layout options to be a +Hash+ when provided.
+      # Layout options are passed as keyword arguments to the layout class.
+      #
+      # @param layout [Class] The layout class to be instantiated.
+      # @param layout_opts [Hash, nil] The layout options to be passed to the layout class.
+      # @param obj [Phlex::SGML] The object to be rendered.
       DEFAULT_LAYOUT_HANDLER = proc do |layout, layout_opts, obj|
         layout_opts ? layout.new(obj, **layout_opts) : layout.new(obj)
       end
@@ -96,7 +101,7 @@ class Roda
         # When no argument is provided, it returns the current layout.
         # Use +nil+ or +false+ to disable layout.
         #
-        # @param layout [Class, Undefined, nil] The layout (a +Phlex::SGML+ class) to be set.
+        # @param layout [Class, nil, false] The layout (a +Phlex::SGML+ class) to be set.
         # @return [Class, nil] The current layout (a +Phlex::SGML+ class) or nil if not set.
         def phlex_layout(layout = Undefined)
           case layout
@@ -115,9 +120,10 @@ class Roda
 
         # Retrieves or sets the layout options.
         # When no argument is provided, it returns the current layout options.
-        # Use +nil+ to reset the layout options.
+        # Use +nil+ to delete layout options.
         #
-        # @param layout_opts [Undefined, nil] The layout options to be set.
+        # @note The {DEFAULT_LAYOUT_HANDLER} expects +layout_opts+ to be a +Hash+.
+        # @param layout_opts [Object, nil] The layout options to be set, usually a +Hash+.
         # @return [Object, nil] The current layout options or nil if not set.
         def phlex_layout_opts(layout_opts = Undefined)
           case layout_opts
@@ -134,7 +140,7 @@ class Roda
         # When no argument is provided, it returns the current layout handler.
         # Use +nil+ to reset the layout handler to the {DEFAULT_LAYOUT_HANDLER}.
         #
-        # @param handler [#call, Undefined, nil] The layout handler to be set.
+        # @param handler [#call, nil] The layout handler to be set.
         # @return [#call] The current layout handler.
         def phlex_layout_handler(handler = Undefined)
           case handler
