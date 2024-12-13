@@ -93,6 +93,9 @@ class Roda
 
       module InstanceMethods
         # Retrieves or sets the layout.
+        # When no argument is provided, it returns the current layout.
+        # Use +nil+ to reset the layout.
+        #
         # @param layout [Class, Undefined, nil] The layout (a +Phlex::SGML+ class) to be set.
         # @return [Class, nil] The current layout (a +Phlex::SGML+ class) or nil if not set.
         def phlex_layout(layout = Undefined)
@@ -112,6 +115,9 @@ class Roda
         end
 
         # Retrieves or sets the layout options.
+        # When no argument is provided, it returns the current layout options.
+        # Use +nil+ to reset the layout options.
+        #
         # @param layout_opts [Undefined, nil] The layout options to be set.
         # @return [Object, nil] The current layout options or nil if not set.
         def phlex_layout_opts(layout_opts = Undefined)
