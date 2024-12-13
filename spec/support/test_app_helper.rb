@@ -102,6 +102,22 @@ module TestAppHelper
             end
           end
         end
+
+        r.on "layout_handler" do
+          phlex_layout AlternativeLayout
+          phlex_layout_handler ->(layout, _opts, obj) {
+            layout.new(obj, title: "phlex_layout_handler override")
+          }
+
+          r.is do
+            phlex FooView.new
+          end
+
+          r.get "reset_to_default" do
+            phlex_layout_handler nil
+            phlex FooView.new
+          end
+        end
       end
     end.app
   end

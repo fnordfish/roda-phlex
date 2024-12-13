@@ -192,4 +192,22 @@ RSpec.describe "Roda::RodaPlugins::Phlex" do
       end
     end
   end
+
+  context "when using layout_handler" do
+    it "renders the layout using the custom handler" do
+      get "/layout_handler"
+
+      expect(last_response.body).to eq <<~HTML.chomp
+        <html><head><title>phlex_layout_handler override</title></head><body><main>AlternativeLayout Start<p>foo</p>AlternativeLayout End</main></body></html>
+      HTML
+    end
+
+    it "resets the layout handler to the default" do
+      get "/layout_handler/reset_to_default"
+
+      expect(last_response.body).to eq <<~HTML.chomp
+        <html><head><title>default-title</title></head><body><main>AlternativeLayout Start<p>foo</p>AlternativeLayout End</main></body></html>
+      HTML
+    end
+  end
 end
