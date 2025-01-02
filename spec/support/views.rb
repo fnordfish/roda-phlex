@@ -22,6 +22,19 @@ class LinkView < Phlex::HTML
   end
 end
 
+class ApplicationView < Phlex::HTML
+end
+
+class ApplicationLinkView < ApplicationView
+  def initialize(full)
+    @full = full
+  end
+
+  def view_template
+    a(href: url("/bar", @full)) { "link" }
+  end
+end
+
 class MoreDetailsView < Phlex::HTML
   def view_template
     pre { JSON.dump(app.request.params) }
