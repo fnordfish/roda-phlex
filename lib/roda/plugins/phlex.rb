@@ -20,9 +20,11 @@ class Roda
     # - `:delegate`: Define if or which methods should be delegated to the Roda app:
     #     + `true` (default): Create a single `app` method that delegates to the Roda app.
     #     + `false`: Do not create any delegate methods.
-    #     + `:all`: Delegate all methods the Roda app responds to, to it. Be careful with this option.
-    #               It can lead to unexpected behavior if the Roda app has methods that conflict with Phlex methods.
-    #     + `Symbol`, `String`, `Array<Symbol,String>`: Delegate only the named methods to the Roda app.
+    #     + `Array<Symbol,String>`: Delegate the named methods to the Roda app.
+    # - `:delegate_on`: Class or module to define delegation methods on. Defaults to +::Phlex::SGML+.
+    #    + Use this option to limit delegation methods to a application specific class or module
+    #      (like "ApplicationView") to avoid polluting the global namespace.
+    # - `:delegate_name`: The name of the method that delegates to the Roda app. Defaults to `"app"`.
     module Phlex
       Undefined = Object.new
       private_constant :Undefined
@@ -53,46 +55,48 @@ class Roda
         layout_opts ? layout.new(obj, **layout_opts) : layout.new(obj)
       end
 
+      # @!visibility private
+      DELEGATE_ERROR_MESSAGE = "roda-phlex: :delegate is enabled, but :%s is to %s. Delegation will be disabled. Set :delegate to false to suppress this warning."
+      private_constant :DELEGATE_ERROR_MESSAGE
+
       # Configures the Phlex plugin for the Roda application.
       # @param app [Roda] The Roda application.
       # @param opts [Hash] The options for configuring the Phlex plugin.
       def self.configure(app, opts = OPTS)
-        delegate = opts.key?(:delegate) ? opts.delete(:delegate) : true
-        app.opts[:phlex] = opts
-        app.opts[:phlex][:layout_handler] ||= DEFAULT_LAYOUT_HANDLER
-
+        delegate = opts.fetch(:delegate, true)
         if delegate
-          overrides = Module.new do
-            def app
-              @_view_context
-            end
+          delegate_on = opts.fetch(:delegate_on) { ::Phlex::SGML }
+          delegate_name = opts.fetch(:delegate_name, "app")
+
+          warn sprintf(DELEGATE_ERROR_MESSAGE, "delegate_on", delegate_on.inspect) unless delegate_on
+          warn sprintf(DELEGATE_ERROR_MESSAGE, "delegate_name", delegate_name.inspect) unless delegate_name
+        end
+
+        app.opts[:phlex] = opts.dup
+        app.opts[:phlex][:layout_handler] ||= DEFAULT_LAYOUT_HANDLER
+        app.opts[:phlex][:context] ||= {}
+
+        if delegate && delegate_on && delegate_name
+          delegate_mod = Module.new do
+            class_eval <<~RUBY, __FILE__, __LINE__ + 1
+              def #{delegate_name}
+                @_view_context
+              end
+            RUBY
 
             case delegate
-            when :all
-              def method_missing(name, ...)
-                if app.respond_to?(name)
-                  app.send(name, ...)
-                else
-                  super
-                end
-              end
-
-              def respond_to_missing?(name, include_private = false)
-                app.respond_to?(name) || super
-              end
-
-            when Symbol, String, Array
-              Array(delegate).each do |delegate|
+            when Array
+              delegate.each do |delegate|
                 class_eval <<~RUBY, __FILE__, __LINE__ + 1
                   def #{delegate}(...)
-                    app.#{delegate}(...)
+                    #{delegate_name}.#{delegate}(...)
                   end
                 RUBY
               end
             end
           end
 
-          ::Phlex::SGML.include(overrides)
+          delegate_on.include(delegate_mod)
         end
       end
 

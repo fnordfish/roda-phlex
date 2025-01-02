@@ -5,10 +5,6 @@ RSpec.describe "Roda::RodaPlugins::Phlex" do
     @test_app_plugins = {phlex: {}}
   end
 
-  def app
-    build_test_app(@test_app_plugins)
-  end
-
   it "has running roda app" do
     get "/"
     expect(last_response.body).to eq("root")
@@ -18,48 +14,6 @@ RSpec.describe "Roda::RodaPlugins::Phlex" do
     it "the Phlex view is rendered as expected" do
       get "/foo"
       expect(last_response.body).to eq("<p>foo</p>")
-    end
-  end
-
-  context "using Sinatra's #url helper within a Phlex view" do
-    [{delegate: :all}, {delegate: [:url]}].each do |opts|
-      context "using #{opts}" do
-        before do
-          @test_app_plugins = {
-            sinatra_helpers: {delegate: true},
-            phlex: opts
-          }
-        end
-
-        after do
-          @test_app_plugins = {phlex: {}}
-        end
-
-        it "works" do
-          get "/link"
-
-          expect(last_response.body).to eq('<a href="/bar">link</a>')
-          expect(last_response.media_type).to eq("text/html")
-        end
-
-        it "works when hosted at a sub-path" do
-          get "/link", {}, {"SCRIPT_NAME" => "/foo"}
-
-          expect(last_response.body).to eq('<a href="/foo/bar">link</a>')
-          expect(last_response.media_type).to eq("text/html")
-        end
-
-        it "works with full URLs" do
-          headers = {
-            "HTTP_HOST" => "foo.example.com",
-            "SCRIPT_NAME" => "/foo"
-          }
-          get "/link", {full: "1"}, headers
-
-          expect(last_response.body).to eq('<a href="http://foo.example.com/foo/bar">link</a>')
-          expect(last_response.media_type).to eq("text/html")
-        end
-      end
     end
   end
 

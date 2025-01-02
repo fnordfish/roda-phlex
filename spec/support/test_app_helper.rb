@@ -5,10 +5,18 @@ require_relative "views"
 module TestAppHelper
   module_function
 
+  def app
+    build_test_app(@test_app_plugins)
+  end
+
   def build_test_app(test_app_plugins = {})
     Class.new(Roda) do
       test_app_plugins.each do |name, opts|
-        plugin name, opts
+        if opts.empty?
+          plugin name
+        else
+          plugin name, opts
+        end
       end
 
       route do |r|
@@ -35,6 +43,10 @@ module TestAppHelper
 
         r.get "link" do
           phlex LinkView.new(r.params["full"])
+        end
+
+        r.get "application-link" do
+          phlex ApplicationLinkView.new(r.params["full"])
         end
 
         r.get "more" do

@@ -8,11 +8,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+- `:delegate_on` plugin option to specify the object to delegate methods to.
+  Defaults to `::Phlex::SGML` but its advised to set it to your own subclass of `::Phlex::SGML`.
+- `:delegate_name` plugin option to specify name of the method that delegates to the Roda app.
+  Defaults to `"app"`.
+
 ### Changed
 
 ### Deprecated
 
 ### Removed
+
+- `delegate: :all` plugin option removed. You need to specify the methods to delegate explicitly.
+- `delegate: <Symbol,String>` plugin option removed. Method names need to be specified as an array of
+  symbols or strings, even when delegating only one method.
 
 ### Fixed
 
