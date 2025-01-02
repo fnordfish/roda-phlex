@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+- Support for Phlex 2.0 Component context. (`HelloWorld.new.call(context: {some: :data})`).
 - `:delegate_on` plugin option to specify the object to delegate methods to.
   Defaults to `::Phlex::SGML` but its advised to set it to your own subclass of `::Phlex::SGML`.
 - `:delegate_name` plugin option to specify name of the method that delegates to the Roda app.
