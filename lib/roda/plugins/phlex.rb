@@ -157,11 +157,26 @@ class Roda
           end
         end
 
+        # Retrieves or sets the Phlex context.
+        # When no argument is provided, it returns the current Phlex context.
+        #
+        # @param context [Hash] The Phlex context to be set.
+        # @return [Hash] The current Phlex context.
+        def phlex_context(context = Undefined)
+          case context
+          when Undefined
+            opts.dig(:phlex, :context)
+          else
+            opts[:phlex][:context] = context
+          end
+        end
+
         # Renders a Phlex object.
         # @param obj [Phlex::SGML] The Phlex object to be rendered.
+        # @param context [Hash] The Phlex context to be used for rendering.
         # @param content_type [String, nil] The content type of the response.
         # @param stream [Boolean] Whether to stream the response or not.
-        def phlex(obj, content_type: nil, stream: false)
+        def phlex(obj, context: phlex_context, content_type: nil, stream: false)
           raise TypeError.new(obj) unless obj.is_a?(::Phlex::SGML)
 
           content_type ||= "image/svg+xml" if obj.is_a?(::Phlex::SVG)
@@ -176,10 +191,10 @@ class Roda
 
           if stream
             self.stream do |out|
-              renderer.call(out, view_context: self)
+              renderer.call(out, context: context, view_context: self)
             end
           else
-            renderer.call(view_context: self)
+            renderer.call(context: context, view_context: self)
           end
         end
       end
