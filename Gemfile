@@ -6,10 +6,10 @@ source "https://rubygems.org"
 gemspec
 
 gem "rake", "~> 13.0"
-
-gem "rspec", "~> 3.0"
-gem "capybara"
+gem "rspec", "~> 3.13"
+gem "rack-test", "~> 2.1"
+gem "capybara", "~> 3.35"
 gem "puma"
-gem "rack-test"
 
-gem "standard", "~> 1.3"
+gem "standard", "~> 1.43"
+gem "debug"

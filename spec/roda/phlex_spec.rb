@@ -86,7 +86,7 @@ RSpec.describe "Roda::RodaPlugins::Phlex" do
     it "outputs the full response with an explicit layout" do
       last_response = get_capybara("/stream/explicit")
       expect(last_response.body).to eq <<~HTML.chomp
-        <!DOCTYPE html><html><head></head><body>Layout Start<p>View Data</p>Layout End</body></html>
+        <!doctype html><html><head></head><body>Layout Start<p>View Data</p>Layout End</body></html>
       HTML
       # Indicates that streaming is being used.
       expect(last_response["Content-Length"]).to be_nil

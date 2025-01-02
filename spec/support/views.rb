@@ -80,7 +80,7 @@ class HomepageLayout < Phlex::HTML
     html do
       head do
         meta(charset: "UTF-8")
-        meta("http-equiv" => "UTF-8", "content" => "IE=edge")
+        meta("http-equiv" => safe("UTF-8"), "content" => "IE=edge")
         meta(
           name: "viewport",
           content: "width=device-width, initial-scale=1.0"
@@ -114,7 +114,7 @@ end
 
 module ExplicitLayout
   class Layout < Phlex::HTML
-    def view_template(&block)
+    def view_template
       doctype
       html {
         head {
@@ -124,7 +124,7 @@ module ExplicitLayout
         # benefit all pages that opt in to streaming.
         body {
           plain "Layout Start"
-          yield_content(&block)
+          yield
           plain "Layout End"
         }
       }
@@ -133,7 +133,7 @@ module ExplicitLayout
 
   class MyView < Phlex::HTML
     def view_template
-      render Layout.new {
+      render(Layout.new do
         # Knowing that this page can take a while to generate we can choose to
         # flush here so the browser can render the site header while downloading
         # the rest of the page - which should help minimise the First Contentful
@@ -141,7 +141,7 @@ module ExplicitLayout
         flush
 
         p { "View Data" }
-      }
+      end)
     end
   end
 end
