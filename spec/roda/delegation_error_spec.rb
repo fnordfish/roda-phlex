@@ -13,6 +13,6 @@ RSpec.describe "errors when delegate is not set on correct base class", isolate:
   it "raises an error" do
     expect {
       get "/link" # expects delegates on Phlex::SGML
-    }.to raise_error(NoMethodError, /undefined method `url'/)
+    }.to raise_error(NoMethodError, /undefined method (?:`|')url'/)
   end
 end
