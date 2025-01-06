@@ -21,5 +21,5 @@ module CapybaraHelper
   Capybara.register_driver(:needs_server) { NeedsServerDriver.new }
   Capybara.app = TestAppHelper.build_test_app(phlex: {}, streaming: {})
   Capybara.default_driver = :needs_server
-  Capybara.server = :puma, {Silent: true}
+  Capybara.server = :puma, {Silent: true, Threads: "1:1"}
 end

@@ -26,9 +26,6 @@ class Roda
     #      (like "ApplicationView") to avoid polluting the global namespace.
     # - `:delegate_name`: The name of the method that delegates to the Roda app. Defaults to `"app"`.
     module Phlex
-      Undefined = Object.new
-      private_constant :Undefined
-
       Error = Class.new(StandardError)
 
       # Custom TypeError class for Phlex errors.
@@ -101,90 +98,98 @@ class Roda
       end
 
       module InstanceMethods
-        # Retrieves or sets the layout.
-        # When no argument is provided, it returns the current layout.
-        # Use +nil+ or +false+ to disable layout.
-        #
-        # @param layout [Class, nil, false] The layout (a +Phlex::SGML+ class) to be set.
+        # Retrieves the layout class.
         # @return [Class, nil] The current layout (a +Phlex::SGML+ class) or nil if not set.
-        def phlex_layout(layout = Undefined)
-          case layout
-          when Undefined
-            opts.dig(:phlex, :layout)
-          when nil, false
-            opts[:phlex].delete(:layout)
+        def phlex_layout
+          return @_phlex_layout if defined?(@_phlex_layout)
+          @_phlex_layout = opts.dig(:phlex, :layout)
+        end
+
+        # Sets the layout class.
+        #
+        # @param layout [Class, nil] The layout class to be set.
+        # @return [Class, nil] The layout class that was set.
+        def set_phlex_layout(layout)
+          if !layout || layout <= ::Phlex::SGML
+            @_phlex_layout = layout
           else
-            if layout <= ::Phlex::SGML
-              opts[:phlex][:layout] = layout
-            else
-              raise TypeError.new(layout)
-            end
+            raise TypeError.new(layout)
           end
         end
 
-        # Retrieves or sets the layout options.
-        # When no argument is provided, it returns the current layout options.
-        # Use +nil+ to delete layout options.
-        #
-        # @note The {DEFAULT_LAYOUT_HANDLER} expects +layout_opts+ to be a +Hash+.
-        # @param layout_opts [Object, nil] The layout options to be set, usually a +Hash+.
+        # Retrieves the layout options hash.
         # @return [Object, nil] The current layout options or nil if not set.
-        def phlex_layout_opts(layout_opts = Undefined)
-          case layout_opts
-          when Undefined
-            opts.dig(:phlex, :layout_opts)
-          when nil
-            opts[:phlex].delete(:layout_opts)
-          else
-            opts[:phlex][:layout_opts] = layout_opts
-          end
+        # @note Layout options set via the plugin configuration will get `dep`ed
+        #       for the current request. Be aware that this is a shallow copy and
+        #       changes to nested objects will affect the original object, that is
+        #       all subsequent requests. This is *unsafe* and should be avoided:
+        #       ```ruby
+        #       plugin :phlex, layout_opts: {key: {nested: "value"}}
+        #       # ...
+        #       # UNSAFE: Changes to phlex_layout_opts[:key] will affect the plugin config.
+        #       phlex_layout_opts[:key][:nested] = "other value"
+        #       ```
+        def phlex_layout_opts
+          return @_phlex_layout_opts if defined?(@_phlex_layout_opts)
+          @_phlex_layout_opts = opts.dig(:phlex, :layout_opts).dup
         end
 
-        # Retrieves or sets the layout handler.
-        # When no argument is provided, it returns the current layout handler.
-        # Use +nil+ or +:default: to reset the layout handler to the {DEFAULT_LAYOUT_HANDLER}.
-        #
-        # @param handler [#call, nil, :default] The layout handler to be set.
+        # Sets the layout options.
+        # @param layout_opts [Object, nil] The layout options to be set.
+        # @return [Object, nil] The layout options that were set.
+        # @note The {DEFAULT_LAYOUT_HANDLER} expects +layout_opts+ to be a +Hash+.
+        def set_phlex_layout_opts(layout_opts)
+          @_phlex_layout_opts = layout_opts
+        end
+
+        # Retrieves the layout handler.
         # @return [#call] The current layout handler.
-        def phlex_layout_handler(handler = Undefined)
-          case handler
-          when Undefined
-            opts.dig(:phlex, :layout_handler)
+        def phlex_layout_handler
+          return @_phlex_layout_handler if defined?(@_phlex_layout_handler)
+          @_phlex_layout_handler = opts.dig(:phlex, :layout_handler)
+        end
+
+        # Sets the layout handler.
+        # Use +nil+ or +:default: to reset the layout handler to the {DEFAULT_LAYOUT_HANDLER}.
+        def set_phlex_layout_handler(handler)
+          @_phlex_layout_handler = case handler
           when nil, :default
-            opts[:phlex][:layout_handler] = DEFAULT_LAYOUT_HANDLER
+            DEFAULT_LAYOUT_HANDLER
           else
-            opts[:phlex][:layout_handler] = handler
+            handler
           end
         end
 
-        # Retrieves or sets the Phlex context.
-        # When no argument is provided, it returns the current Phlex context.
-        #
+        # Retrieves the Phlex context.
+        # @return [Hash, nil] The current Phlex context.
+        def phlex_context
+          return @_phlex_context if defined?(@_phlex_context)
+          @phlex_context = opts.dig(:phlex, :context).dup
+        end
+
+        # Sets the Phlex context.
         # @param context [Hash] The Phlex context to be set.
-        # @return [Hash] The current Phlex context.
-        def phlex_context(context = Undefined)
-          case context
-          when Undefined
-            opts.dig(:phlex, :context)
-          else
-            opts[:phlex][:context] = context
-          end
+        # @return [Hash] The Phlex context that was set.
+        def set_phlex_context(context)
+          @_phlex_context = context
         end
 
         # Renders a Phlex object.
         # @param obj [Phlex::SGML] The Phlex object to be rendered.
-        # @param context [Hash] The Phlex context to be used for rendering.
+        # @param layout [Class, nil] The layout to be used for rendering. Defaults to the layout set by {#phlex_layout}.
+        #   - The layout class will be initialized with the object and layout options from #{phlex_layout_opts} via {#phlex_layout_handler}.
+        #   - +nil+ or +false+ will disable layout and render the +obj+ directly.
+        # @param context [Hash, nil] The Phlex context to be used for rendering. Defaults to the context set by {#phlex_context}.
         # @param content_type [String, nil] The content type of the response.
         # @param stream [Boolean] Whether to stream the response or not.
-        def phlex(obj, context: phlex_context, content_type: nil, stream: false)
+        def phlex(obj, layout: phlex_layout, context: phlex_context, content_type: nil, stream: false)
           raise TypeError.new(obj) unless obj.is_a?(::Phlex::SGML)
 
           content_type ||= "image/svg+xml" if obj.is_a?(::Phlex::SVG)
           response["Content-Type"] = content_type if content_type
 
-          phlex_opts = opts[:phlex]
-          renderer = if (layout = phlex_opts[:layout])
-            phlex_layout_handler.call(layout, phlex_opts[:layout_opts], obj)
+          renderer = if layout
+            phlex_layout_handler.call(layout, phlex_layout_opts, obj)
           else
             obj
           end

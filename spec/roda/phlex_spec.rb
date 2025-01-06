@@ -151,6 +151,36 @@ RSpec.describe "Roda::RodaPlugins::Phlex" do
         expect(last_response.body).to include("<title>route-title</title>")
       end
     end
+
+    describe "mutating layout options" do
+      before do
+        @test_app_plugins = {phlex: {layout: AlternativeLayout, layout_opts: {title: +"Default"}}}
+      end
+
+      it "carries to the next request when changing the plugin config" do
+        get "/layout/mutate_opts/unsafe", {title: "A"}
+        expect(last_response.body).to include("<title>A - Default</title>")
+
+        get "/layout/mutate_opts/unsafe", {title: "B"}
+        expect(last_response.body).to include("<title>B - A - Default</title>")
+      end
+
+      it "does not carry to the next request when changing the shallow copy" do
+        get "/layout/mutate_opts/safer", {title: "A"}
+        expect(last_response.body).to include("<title>A - Default</title>")
+
+        get "/layout/mutate_opts/safer", {title: "B"}
+        expect(last_response.body).to include("<title>B - Default</title>")
+      end
+
+      it "does not carry to the next request when creating a new config hash" do
+        get "/layout/mutate_opts/safe", {title: "A"}
+        expect(last_response.body).to include("<title>A - Default</title>")
+
+        get "/layout/mutate_opts/safe", {title: "B"}
+        expect(last_response.body).to include("<title>B - Default</title>")
+      end
+    end
   end
 
   context "when using layout_handler" do

@@ -30,6 +30,8 @@ gem install roda-phlex
 * `:layout_opts` (`Object`): Options that are passed to the layout
   class when it is instantiated. These options can be used to customize
   the behavior of the layout. Usually, this is a `Hash`.
+  To avoid external changes effecting subsequent requests, you should `.freeze` this
+  and all nested objects.
 * `:layout_handler` (`#call`): A custom handler for creating layout
   instances. This proc receives three arguments: the layout class, the
   layout options, and the object to be rendered. By default, it runs
@@ -142,16 +144,17 @@ end
 
 ```ruby
 # Define a default layout and layout options for the whole application
-plugin :phlex, layout: MyLayout, layout_opts: { title: +"My App" }
+plugin :phlex, layout: MyLayout, layout_opts: { title: "My App".freeze }.freeze
+
 route do |r|
   r.on "posts" do
     # redefine the layout and layout options for this route tree
-    phlex_layout MyPostLayout
-    phlex_layout_opts[:title] << " - Posts"
+    set_phlex_layout MyPostLayout
+    set_phlex_layout_opts phlex_layout_opts.merge(title: "#{phlex_layout_opts[:title]} - Posts")
 
     r.get 'new' do
       # Redefine the layout and layout options for this route
-      phlex_layout_opts[:title] = "Create new post"
+      phlex_layout_opts[:title] << " - Create new post"
       phlex MyView.new
     end
   end
