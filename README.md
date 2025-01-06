@@ -43,9 +43,11 @@ gem install roda-phlex
 * `:delegate`: Define if or which methods should be delegated to the Roda app:
     + `true` (default): Create a single `app` method that delegates to the Roda app.
     + `false`: Do not create any delegate methods.
-    + `Array<Symbol,String>`: Delegate only the specified methods to the Roda app.
-* `:delegate_on`: The object to delegate methods to. Defaults to `::Phlex::SGML`.  
-  It is advised to set it to your own subclass of `::Phlex::SGML`, like `ApplicationView`.
+    + `Array<Symbol,String>`: Delegate the named methods to the Roda app.
+* `:delegate_on`: Class or module to define delegation methods on. Defaults to `::Phlex::SGML`.
+    + Use this option to limit delegation methods to a application specific class or module
+     (like "ApplicationView") to avoid polluting the global namespace.
+* `:delegate_name`: The name of the method that delegates to the Roda app. Defaults to `"app"`.
 
 ## Usage
 
