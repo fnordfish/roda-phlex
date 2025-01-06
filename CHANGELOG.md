@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
-## [Unreleased]
+## [1.0.0.beta1] - 2025-01-06
 
 ### Added
 
@@ -24,8 +24,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - `#phlex_layout`, `#phlex_layout_opts`, `#phlex_layout_handler` no longer accept a value to set their value.
   Use their corresponding `#set_*` methods instead.
 
-### Deprecated
-
 ### Removed
 
 - `delegate: :all` plugin option removed. You need to specify the methods to delegate explicitly.
@@ -37,8 +35,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Mutating the layout options hash no longer affects subsequent requests.
   The value passed as `:layout_opts` plugin config is now `dup`ed on first use.
   Note, that mutating nested objects will still affect the original hash.
-
-### Security
 
 ## [0.2.0] - 2024-12-13
 

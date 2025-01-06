@@ -3,7 +3,7 @@
 class Roda
   module RodaPlugins
     module Phlex
-      VERSION = "0.2.0"
+      VERSION = "1.0.0.beta1"
     end
   end
 end
