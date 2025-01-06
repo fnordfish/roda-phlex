@@ -17,6 +17,7 @@ class Roda
     #   layout options, and the object to be rendered. By default, it uses the
     #   `DEFAULT_LAYOUT_HANDLER`, which instantiates the layout class with the
     #   provided object and options as keyword arguments.
+    # - `:context` (+Hash+): The context that is passed to the rendering call. (default: `{}`)
     # - `:delegate`: Define if or which methods should be delegated to the Roda app:
     #     + `true` (default): Create a single `app` method that delegates to the Roda app.
     #     + `false`: Do not create any delegate methods.

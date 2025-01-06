@@ -37,6 +37,9 @@ gem install roda-phlex
   layout options, and the object to be rendered. By default, it runs
   `layout.new(obj, **layout_opts)`, which instantiates the layout class with the
   provided view object and options as keyword arguments.
+* `:context` (`Hash`): The context that is passed to the rendering call. (default: `{}`)
+  To avoid external changes effecting subsequent requests, you should `.freeze` this
+  and all nested objects.
 * `:delegate`: Define if or which methods should be delegated to the Roda app:
     + `true` (default): Create a single `app` method that delegates to the Roda app.
     + `false`: Do not create any delegate methods.
