@@ -9,6 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Added
 
 - Support for Phlex 2.0 Component context. (`HelloWorld.new.call(context: {some: :data})`).
+    + Like layout options, the `:context` plugin option can be used to set a default context.
+    The value will be`dup`ed on first use.
+    + `#phlex_context` method to access the context.
+    + `#set_phlex_context` method to set the context.
 - `:delegate_on` plugin option to specify the object to delegate methods to.
   Defaults to `::Phlex::SGML` but its advised to set it to your own subclass of `::Phlex::SGML`.
 - `:delegate_name` plugin option to specify name of the method that delegates to the Roda app.
@@ -17,6 +21,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 ### Changed
 
 - Update to phlex 2.0.
+- `#phlex_layout`, `#phlex_layout_opts`, `#phlex_layout_handler` no longer accept a value to set their value.
+  Use their corresponding `#set_*` methods instead.
 
 ### Deprecated
 
@@ -27,6 +33,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
   symbols or strings, even when delegating only one method.
 
 ### Fixed
+
+- Mutating the layout options hash no longer affects subsequent requests.
+  The value passed as `:layout_opts` plugin config is now `dup`ed on first use.
+  Note, that mutating nested objects will still affect the original hash.
 
 ### Security
 
