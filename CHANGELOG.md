@@ -8,6 +8,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [0.3.0] - 2025-01-27
+
+### Added
+
 - Support for Phlex Component context. (`HelloWorld.new.call(context: {some: :data})`).
     + Like layout options, the `:context` plugin option can be used to set a default context.
     The value will be`dup`ed on first use.
@@ -23,8 +37,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - `#phlex_layout`, `#phlex_layout_opts`, `#phlex_layout_handler` no longer accept a value to set their value.
   Use their corresponding `#set_*` methods instead.
 
-### Deprecated
-
 ### Removed
 
 - `delegate: :all` plugin option removed. You need to specify the methods to delegate explicitly.
@@ -36,8 +48,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 - Mutating the layout options hash no longer affects subsequent requests.
   The value passed as `:layout_opts` plugin config is now `dup`ed on first use.
   Note, that mutating nested objects will still affect the original hash.
-
-### Security
 
 ## [0.2.0] - 2024-12-13
 
@@ -62,7 +72,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 
 ________________________________________________________________________________
 
-[Unreleased]: https://github.com/fnordfish/roda-phlex/compare/v0.2.0...main
+[Unreleased]: https://github.com/fnordfish/roda-phlex/compare/v0.3.0...phlex-1
+[0.3.0]: https://github.com/fnordfish/roda-phlex/releases/tag/v0.3.0
 [0.2.0]: https://github.com/fnordfish/roda-phlex/releases/tag/v0.2.0
 [0.1.0]: https://github.com/fnordfish/roda-phlex/releases/tag/v0.1.0
 
