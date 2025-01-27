@@ -20,6 +20,12 @@ If bundler is not being used to manage dependencies, install the gem by executin
 gem install roda-phlex
 ```
 
+## Phlex Compatibility
+
+* Version 1.x of `roda-phlex` is compatible with Phlex 2.0.
+* For Phlex 1.x compatibility, use version 0.x of this gem, or the
+  [`phlex-1`](https://github.com/fnordfish/roda-phlex/tree/phlex-1) branch.
+
 ## Configuration
 
 `plugin :phlex` takes the following options:
