@@ -26,6 +26,7 @@ class Roda
     #    + Use this option to limit delegation methods to a application specific class or module
     #      (like "ApplicationView") to avoid polluting the global namespace.
     # - `:delegate_name`: The name of the method that delegates to the Roda app. Defaults to `"app"`.
+    # - `:context_key`: The context key to use to access the Roda app. Defaults to `:__roda_app__`.
     module Phlex
       Error = Class.new(StandardError)
 
@@ -65,6 +66,9 @@ class Roda
         if delegate
           delegate_on = opts.fetch(:delegate_on) { ::Phlex::SGML }
           delegate_name = opts.fetch(:delegate_name, "app")
+          context_key = opts.fetch(:context_key, :__roda_app__)
+
+          raise ArgumentError, "context_key must be set when delegating" unless context_key
 
           warn sprintf(DELEGATE_ERROR_MESSAGE, "delegate_on", delegate_on.inspect) unless delegate_on
           warn sprintf(DELEGATE_ERROR_MESSAGE, "delegate_name", delegate_name.inspect) unless delegate_name
@@ -75,10 +79,12 @@ class Roda
         app.opts[:phlex][:context] ||= {}
 
         if delegate && delegate_on && delegate_name
+          app.opts[:phlex][:context_key] = context_key
+
           delegate_mod = Module.new do
             class_eval <<~RUBY, __FILE__, __LINE__ + 1
               def #{delegate_name}
-                @_context.view_context
+                context[#{context_key.inspect}]
               end
             RUBY
 
@@ -195,12 +201,15 @@ class Roda
             obj
           end
 
+          context ||= {}
+          context[opts[:phlex][:context_key]] = self
+
           if stream
             self.stream do |out|
-              renderer.call(out, context: context, view_context: self)
+              renderer.call(out, context: context)
             end
           else
-            renderer.call(context: context, view_context: self)
+            renderer.call(context: context)
           end
         end
       end
